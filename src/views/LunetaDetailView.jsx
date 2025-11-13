@@ -9,7 +9,8 @@ import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded'
 import ReportRoundedIcon from '@mui/icons-material/ReportRounded'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-import ImageSliderComponent from '../components/ImageSliderComponent'
+// import ImageSliderComponent from '../components/ImageSliderComponent'
+import DemoOne from '../components/ui/demo'
 import { ColorModeContext } from '../App'
 import { generateSimulatedData } from '../utils/dataSimulator'
 import { generateGovernmentSnapshot } from '../utils/govSimulator'
@@ -164,8 +165,10 @@ export default function LunetaDetailView({ onBack }) {
           </Stack>
         </Paper>
 
-        {/* Visual hero slider */}
-        <ImageSliderComponent />
+        {/* Visual hero: replaced with new carousel */}
+        <DemoOne />
+
+        {/* Scroll animation hero removed to avoid undefined import */}
 
         {/* Tabs: Heritage | Dashboard */}
         <Box sx={{ mt: 3 }}>
@@ -198,6 +201,54 @@ export default function LunetaDetailView({ onBack }) {
                           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.03)' }}>
                             <Typography variant="subtitle1" fontWeight={700}>{h.title}</Typography>
                             <Typography variant="body2" color="text.secondary">{h.desc}</Typography>
+                          </Paper>
+                        </Grid>
+                      ))}
+                    </Grid>
+                  </SectionCard>
+
+                  {/* Heritage Components (placeholders) */}
+                  <SectionCard title="Heritage Components">
+                    <Grid container spacing={1.5}>
+                      {[
+                        {
+                          title: 'Cooling Canopy',
+                          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=800&fit=crop',
+                          desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst.'
+                        },
+                        {
+                          title: 'Solar Tree',
+                          img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop',
+                          desc: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.'
+                        },
+                        {
+                          title: 'Water Feature',
+                          img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
+                          desc: 'Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.'
+                        },
+                        {
+                          title: 'Garden Walk',
+                          img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=800&fit=crop',
+                          desc: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
+                        },
+                        {
+                          title: 'Pavilion',
+                          img: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=1200&h=800&fit=crop',
+                          desc: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+                        },
+                        {
+                          title: 'Monument Plaza',
+                          img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop',
+                          desc: 'Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Vestibulum ante ipsum primis in faucibus.'
+                        },
+                      ].map((c, i) => (
+                        <Grid item xs={12} sm={6} md={4} key={i}>
+                          <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: 'rgba(255,255,255,0.03)' }}>
+                            <Box component="img" src={c.img} alt={c.title} sx={{ width: '100%', height: 160, objectFit: 'cover' }} />
+                            <Box sx={{ p: 2 }}>
+                              <Typography variant="subtitle1" fontWeight={700}>{c.title}</Typography>
+                              <Typography variant="body2" color="text.secondary">{c.desc}</Typography>
+                            </Box>
                           </Paper>
                         </Grid>
                       ))}
