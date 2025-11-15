@@ -17,7 +17,7 @@ export function generateAdvancedData({ hours = 24, bounds = null } = {}) {
 
   // baseline foot traffic (people) and environment - scaled to realistic canopy coverage area
   const baselineFoot = hoursLabels.map((t, i) => ({ t, v: clamp(8 + 12 * Math.sin(i / 3), 0, 30) }))
-  const baselineHeat = hoursLabels.map((t, i) => ({ t, v: clamp(30 + 8 * Math.sin(i / 4), 24, 45) }))
+  const baselineHeat = hoursLabels.map((t, i) => ({ t, v: clamp(26 + 6 * Math.sin(i / 4), 24, 35) }))
 
   // pollution event on the "west" side (x < gridW / 2) for a 60-minute window near the end
   const eventStart = Math.max(0, hours - 6)
@@ -73,12 +73,14 @@ export function generateAdvancedData({ hours = 24, bounds = null } = {}) {
 
         // Rule 1: people react to environment (negative correlation)
         const heatIndex = baseHeat
-        if (heatIndex > 35 || baselineAqi > 100) {
+        if (heatIndex > 32 || baselineAqi > 100) {
           // reduce footfall in uncomfortable conditions
-          actualFoot *= 0.7
+          actualFoot *= 0.65
         }
 
-        const aqi = clamp(baselineAqi + actualFoot * 0.08, 20, 220)
+        // More nuanced people-to-pollution: higher density areas have bigger impact
+        const pollutionMultiplier = 0.12 + (densityFactor - 0.3) * 0.08
+        const aqi = clamp(baselineAqi + actualFoot * pollutionMultiplier, 20, 220)
 
         aqiSeriesForCell.push({ t, v: Math.round(aqi) })
         footSeriesForCell.push({ t, v: Math.round(actualFoot) })

@@ -32,12 +32,12 @@ import EngagementPanel from './advanced/EngagementPanel'
 export default function UrbanSenseControlRoom({ open, onClose }) {
   const { timeRange, setTimeRange, publicSnap, govSnap, advData, govHistory, advHistory } = useUrbanSenseData()
   const [lens, setLens] = useState(0) // 0 Overview, 1 Operations, 2 Env & Crowd, 3 Engagement, 4 Comparison
-  const [selectedLocationIds, setSelectedLocationIds] = useState(['luneta']) // Default to Luneta
+  const allLocations = useMemo(() => getAllLocations(), [])
+  const [selectedLocationIds, setSelectedLocationIds] = useState(() => allLocations.map(l => l.id)) // Default to all locations
   const [locationData, setLocationData] = useState(new Map()) // Map<locationId, {govSnap, advData}>
   const [isLoading, setIsLoading] = useState(false)
   const [mobileDialogOpen, setMobileDialogOpen] = useState(false)
   const [showSelectionHint, setShowSelectionHint] = useState(true)
-  const allLocations = useMemo(() => getAllLocations(), [])
   
   const MAX_LOCATIONS = 4 // UX limit for performance
 
@@ -100,7 +100,7 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
   }
   
   const handleClearAll = () => {
-    setSelectedLocationIds(['luneta']) // Reset to default
+    setSelectedLocationIds(allLocations.map(l => l.id)) // Reset to all locations
   }
 
   // Aggregate data across all selected locations
@@ -158,25 +158,7 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
             <Box sx={{ flexGrow: 1 }} />
             
             {/* Enhanced Multi-Location Selector */}
-            <Tooltip 
-              title={
-                <Box>
-                  <Typography variant="caption" fontWeight={700}>Location Selection</Typography>
-                  <Typography variant="caption" display="block" sx={{ mt: 0.5 }}>
-                    • Select 1-{MAX_LOCATIONS} locations to monitor
-                  </Typography>
-                  <Typography variant="caption" display="block">
-                    • Choose multiple for comparison view
-                  </Typography>
-                  <Typography variant="caption" display="block">
-                    • At least one location required
-                  </Typography>
-                </Box>
-              }
-              arrow
-              placement="bottom"
-            >
-              <FormControl size="small" sx={{ minWidth: 220, display: { xs: 'none', md: 'flex' } }}>
+            <FormControl size="small" sx={{ minWidth: 220, display: { xs: 'none', md: 'flex' } }}>
                 <Select
                   multiple
                   value={selectedLocationIds}
@@ -261,12 +243,12 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
                             All
                           </Button>
                         </Tooltip>
-                        <Tooltip title="Reset to Luneta only" arrow>
+                        <Tooltip title="Reset to all locations" arrow>
                           <Button 
                             size="small" 
                             startIcon={<RefreshRoundedIcon fontSize="small" />}
                             onClick={handleClearAll}
-                            disabled={selectedLocationIds.length === 1 && selectedLocationIds[0] === 'luneta'}
+                            disabled={selectedLocationIds.length === allLocations.length}
                             sx={{ fontSize: '0.65rem', px: 1, py: 0.25 }}
                           >
                             Reset
@@ -349,7 +331,6 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
                   </Box>
                 </Select>
               </FormControl>
-            </Tooltip>
 
             {/* Mobile Location Selector */}
             <Tooltip title="Tap to select locations" arrow>

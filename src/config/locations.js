@@ -102,18 +102,18 @@ export const LOCATIONS = {
     name: 'Binondo',
     displayName: 'Binondo Chinatown Heritage District',
     shortName: 'Binondo',
-    coordinates: [120.9750, 14.6000],
+    coordinates: [120.9745, 14.6000],
     zoom: 15.5,
     polygon: [
       [120.9710, 14.6040],
-      [120.9790, 14.6050],
-      [120.9800, 14.5950],
+      [120.9780, 14.6050],
+      [120.9780, 14.5950],
       [120.9720, 14.5940],
       [120.9710, 14.6040]
     ],
     bounds: {
       minLng: 120.9710,
-      maxLng: 120.9800,
+      maxLng: 120.9780,
       minLat: 14.5940,
       maxLat: 14.6050
     },
@@ -288,18 +288,18 @@ export const LOCATIONS = {
     name: 'Pasig River',
     displayName: 'Pasig River Esplanade',
     shortName: 'Pasig River',
-    coordinates: [121.0000, 14.5950],
+    coordinates: [120.9860, 14.5950],
     zoom: 14.5,
     polygon: [
-      [120.9900, 14.6000],
-      [121.0100, 14.6020],
-      [121.0100, 14.5880],
-      [120.9900, 14.5900],
-      [120.9900, 14.6000]
+      [120.9780, 14.6000],
+      [120.9950, 14.6020],
+      [120.9950, 14.5880],
+      [120.9780, 14.5900],
+      [120.9780, 14.6000]
     ],
     bounds: {
-      minLng: 120.9900,
-      maxLng: 121.0100,
+      minLng: 120.9780,
+      maxLng: 120.9950,
       minLat: 14.5880,
       maxLat: 14.6020
     },
@@ -382,9 +382,9 @@ export function getLocation(locationId) {
   return LOCATIONS[locationId] || null
 }
 
-// Helper: Get all locations as array
+// Helper: Get all locations as array (excluding Luneta for now)
 export function getAllLocations() {
-  return Object.values(LOCATIONS)
+  return Object.values(LOCATIONS).filter(loc => loc.id !== 'luneta')
 }
 
 // Helper: Get Manila center point for initial map view
