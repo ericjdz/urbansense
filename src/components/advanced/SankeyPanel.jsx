@@ -2,6 +2,7 @@ import { Paper, Typography } from '@mui/material'
 import { ResponsiveContainer, Sankey, Tooltip } from 'recharts'
 
 export default function SankeyPanel({ data }) {
+  if (!data || !data.sankey) return null
   return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)', height: '100%' }}>
       <Typography variant="subtitle2" gutterBottom>Engagement Flow</Typography>

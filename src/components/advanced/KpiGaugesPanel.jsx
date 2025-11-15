@@ -1,17 +1,19 @@
 import { Grid, Paper, Stack, Typography } from '@mui/material'
+import { globeColors, statusColors } from '../../config/globeColors'
 
 export default function KpiGaugesPanel({ data }) {
+  if (!data || !data.kpis) return null
   const { avgOcc, avgAqi, heatIndex } = data.kpis
   return (
     <Grid container spacing={1.5} sx={{ height: '100%' }}>
       <Grid item xs={12} md={4}>
-        <KpiCard title="Live Canopy Occupancy" value={`${avgOcc}%`} color="#64B6F7" />
+        <KpiCard title="Avg People Per Canopy" value={Math.round(avgOcc)} color={globeColors.primary.main} />
       </Grid>
       <Grid item xs={12} md={4}>
         <KpiCard title="Current AQI" value={avgAqi} color="#90CAF9" />
       </Grid>
       <Grid item xs={12} md={4}>
-        <KpiCard title="Heat Index" value={`${heatIndex}°C`} color="#FFA726" />
+        <KpiCard title="Heat Index" value={`${heatIndex}°C`} color={statusColors.warning.main} />
       </Grid>
     </Grid>
   )

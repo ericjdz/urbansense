@@ -1,5 +1,6 @@
 import { useContext, useEffect, useMemo, useState, lazy, Suspense, useRef } from 'react'
-import { AppBar, Toolbar, IconButton, Box, Container, Grid, Paper, Stack, Typography, Tooltip, Chip, Divider, Tabs, Tab, Button, ButtonGroup, Drawer } from '@mui/material'
+import { useParams, useNavigate } from 'react-router-dom'
+import { AppBar, Toolbar, IconButton, Box, Container, Grid, Paper, Stack, Typography, Tooltip, Chip, Divider, Tabs, Tab, ToggleButtonGroup, ToggleButton, Select, MenuItem, Drawer, Button, ButtonGroup } from '@mui/material'
 import ArrowBackIosNewRoundedIcon from '@mui/icons-material/ArrowBackIosNewRounded'
 import LightModeRoundedIcon from '@mui/icons-material/LightModeRounded'
 import DarkModeRoundedIcon from '@mui/icons-material/DarkModeRounded'
@@ -13,16 +14,15 @@ import ShareRoundedIcon from '@mui/icons-material/ShareRounded'
 import FeedbackRoundedIcon from '@mui/icons-material/FeedbackRounded'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
-// import ImageSliderComponent from '../components/ImageSliderComponent'
 import { ColorModeContext } from '../App'
 import { generateSimulatedData } from '../utils/dataSimulator'
 import { generateGovernmentSnapshot } from '../utils/govSimulator'
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip as RTooltip } from 'recharts'
 import { generateAdvancedData } from '../utils/advancedSimulator'
-import LunetaCarousel from '../components/LunetaCarousel'
-import CanopyNetworkViz from '../components/advanced/CanopyNetworkViz'
-import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, CartesianGrid } from 'recharts'
+import { getLocation } from '../config/locations'
+import HeritageCarousel from '../components/HeritageCarousel'
 import { statusColors, canopyStatus } from '../config/globeColors'
+import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip as RTooltip, CartesianGrid } from 'recharts'
+
 const CanopyStatusPanel = lazy(() => import('../components/advanced/CanopyStatusPanel'))
 const TimeSeriesPanel = lazy(() => import('../components/advanced/TimeSeriesPanel'))
 const KpiGaugesPanel = lazy(() => import('../components/advanced/KpiGaugesPanel'))
@@ -103,27 +103,54 @@ function SensorBlock({ title, description, image, index, scroller }) {
   )
 }
 
-export default function LunetaDetailView({ onBack }) {
+export default function HeritageDetailView() {
+  const { locationId } = useParams()
+  const navigate = useNavigate()
+  const location = getLocation(locationId)
+  
   const { mode, toggleColorMode } = useContext(ColorModeContext)
   const scrollerRef = useRef(null)
+  const [opacity, setOpacity] = useState(0)
   const [publicSnap, setPublicSnap] = useState(() => generateSimulatedData())
   const [govSnap, setGovSnap] = useState(() => generateGovernmentSnapshot())
   const [tab, setTab] = useState(0) // 0: Heritage, 1: Live Monitoring, 2: Analytics
   const [timeRange, setTimeRange] = useState('24h')
   const [selectedCanopy, setSelectedCanopy] = useState(null)
-  const [advData, setAdvData] = useState(() => generateAdvancedData({ hours: 24 }))
+  const [advData, setAdvData] = useState(() => generateAdvancedData({ 
+    hours: 24,
+    bounds: location?.bounds
+  }))
+
+  // Fade in on mount
+  useEffect(() => {
+    const timer = setTimeout(() => setOpacity(1), 50)
+    return () => clearTimeout(timer)
+  }, [])
+
+  // Redirect if location not found
+  useEffect(() => {
+    if (!location) {
+      navigate('/')
+    }
+  }, [location, navigate])
 
   useEffect(() => {
     const id1 = setInterval(() => setPublicSnap(generateSimulatedData()), 5000)
     const id2 = setInterval(() => setGovSnap(generateGovernmentSnapshot()), 6000)
-    const id3 = setInterval(() => setAdvData(generateAdvancedData({ hours: timeRange === '24h' ? 24 : 168 })), 6000)
+    const id3 = setInterval(() => setAdvData(generateAdvancedData({ 
+      hours: timeRange === '24h' ? 24 : 168,
+      bounds: location?.bounds
+    })), 6000)
     return () => { clearInterval(id1); clearInterval(id2); clearInterval(id3) }
-  }, [])
+  }, [timeRange, location])
 
   useEffect(() => {
     // regenerate when timeRange changes
-    setAdvData(generateAdvancedData({ hours: timeRange === '24h' ? 24 : 168 }))
-  }, [timeRange])
+    setAdvData(generateAdvancedData({ 
+      hours: timeRange === '24h' ? 24 : 168,
+      bounds: location?.bounds
+    }))
+  }, [timeRange, location])
 
   // Visitor-centric KPIs
   // Heat Index calculation (simplified NOAA formula for feels-like temperature)
@@ -166,8 +193,8 @@ export default function LunetaDetailView({ onBack }) {
   const canopies = useMemo(() => {
     if (!advData?.canopies) return []
     
-    // Luneta Park bounds
-    const bounds = {
+    // Default bounds for conversion (Luneta Park area)
+    const bounds = location?.bounds || {
       minLng: 120.9757,
       maxLng: 120.9835,
       minLat: 14.5801,
@@ -191,13 +218,13 @@ export default function LunetaDetailView({ onBack }) {
         maintenanceDue: false
       }
     })
-  }, [advData])
+  }, [advData, location])
 
   // Build time series for selected canopy
   const selectedCanopySeries = useMemo(() => {
     if (!selectedCanopy) return []
-    const hours = timeRange === '24h' ? 24 : timeRange === '7d' ? 168 : 720
-    return Array.from({ length: Math.min(hours, 100) }, (_, i) => {
+    const hours = timeRange === '24h' ? 24 : 168
+    return Array.from({ length: hours }, (_, i) => {
       const t = new Date(Date.now() - (hours - i) * 3600000)
       return {
         t: t.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
@@ -206,16 +233,34 @@ export default function LunetaDetailView({ onBack }) {
       }
     })
   }, [selectedCanopy, timeRange])
+
+  if (!location) {
+    return null
+  }
+
+  const handleBack = () => {
+    navigate('/')
+  }
+
   return (
-    <Box ref={scrollerRef} sx={{ position: 'absolute', inset: 0, overflowY: 'auto' }}>
+    <Box 
+      ref={scrollerRef} 
+      sx={{ 
+        position: 'absolute', 
+        inset: 0, 
+        overflowY: 'auto',
+        opacity: opacity,
+        transition: 'opacity 0.5s ease-in-out'
+      }}
+    >
       <AppBar color="transparent" elevation={0} position="sticky" sx={{ backdropFilter: 'blur(6px)', bgcolor: 'background.default' }}>
         <Toolbar>
           <Tooltip title="Back to Map">
-            <IconButton edge="start" onClick={onBack} sx={{ mr: 1 }}>
+            <IconButton edge="start" onClick={handleBack} sx={{ mr: 1 }}>
               <ArrowBackIosNewRoundedIcon />
             </IconButton>
           </Tooltip>
-          <Typography variant="h6" fontWeight={800} letterSpacing={2} sx={{ flexGrow: 1 }}>LUNETA PARK</Typography>
+          <Typography variant="h6" fontWeight={800} letterSpacing={2} sx={{ flexGrow: 1 }}>{location.name.toUpperCase()}</Typography>
           <Tooltip title={mode === 'dark' ? 'Switch to Day' : 'Switch to Night'}>
             <IconButton onClick={toggleColorMode}>
               {mode === 'dark' ? <LightModeRoundedIcon /> : <DarkModeRoundedIcon />}
@@ -225,17 +270,17 @@ export default function LunetaDetailView({ onBack }) {
       </AppBar>
 
       {/* Hero Carousel */}
-      <Box sx={{ pt: 3 }}>
-        <LunetaCarousel />
-      </Box>
+      <Container sx={{ pt: 3 }}>
+        <HeritageCarousel images={location.carouselImages} title={location.displayName} />
+      </Container>
 
       <Container sx={{ py: 3 }}>
         {/* Hero: title + live chips */}
         <Paper variant="outlined" sx={{ p: { xs: 2, md: 3 }, borderRadius: 3, mb: 3, bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}>
           <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'center' }} spacing={1.5}>
             <Box>
-              <Typography variant="h5" fontWeight={800}>Luneta Park (Rizal Park)</Typography>
-              <Typography variant="body2" color="text.secondary">Ermita, Manila • L.I.L.O.M pilot site</Typography>
+              <Typography variant="h5" fontWeight={800}>{location.displayName}</Typography>
+              <Typography variant="body2" color="text.secondary">{location.district} • L.I.L.O.M pilot site</Typography>
             </Box>
             <Box flexGrow={1} />
             <Stack direction="row" spacing={1} flexWrap="wrap">
@@ -259,21 +304,12 @@ export default function LunetaDetailView({ onBack }) {
               {/* Heritage Panel */}
               {tab === 0 && (
                 <Stack spacing={4}>
-                  <Typography variant="body1" color="text.secondary">Luneta Park is a national heritage landscape featuring iconic monuments, cultural venues, and civic spaces. L.I.L.O.M units aim to protect comfort and walkability while preserving sightlines and historical integrity.</Typography>
+                  <Typography variant="body1" color="text.secondary">{location.description}</Typography>
 
                   {/* Heritage Highlights */}
                   <SectionCard title="Highlights">
                     <Grid container spacing={1.5}>
-                      {[{
-                        title: 'Rizal Monument',
-                        desc: 'Central obelisk and statue marking Dr. José Rizal\'s resting place. Preserved sightlines and ambient lighting.'
-                      }, {
-                        title: 'Open-Air Auditorium',
-                        desc: 'Community events venue with optional canopy shade and adjacent AQ sensing.'
-                      }, {
-                        title: 'Museum Cluster',
-                        desc: 'National Museum complex perimeter with improved walkability and microclimate nodes.'
-                      }].map((h, i) => (
+                      {location.highlights.map((h, i) => (
                         <Grid item xs={12} md={4} key={i}>
                           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.03)' }}>
                             <Typography variant="subtitle1" fontWeight={700}>{h.title}</Typography>
@@ -284,41 +320,10 @@ export default function LunetaDetailView({ onBack }) {
                     </Grid>
                   </SectionCard>
 
-                  {/* Heritage Components (placeholders) */}
+                  {/* Heritage Components */}
                   <SectionCard title="Heritage Components">
                     <Grid container spacing={1.5}>
-                      {[
-                        {
-                          title: 'Cooling Canopy',
-                          img: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=1200&h=800&fit=crop',
-                          desc: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. In hac habitasse platea dictumst.'
-                        },
-                        {
-                          title: 'Solar Tree',
-                          img: 'https://images.unsplash.com/photo-1454496522488-7a8e488e8606?w=1200&h=800&fit=crop',
-                          desc: 'Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam.'
-                        },
-                        {
-                          title: 'Water Feature',
-                          img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
-                          desc: 'Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.'
-                        },
-                        {
-                          title: 'Garden Walk',
-                          img: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1200&h=800&fit=crop',
-                          desc: 'Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.'
-                        },
-                        {
-                          title: 'Pavilion',
-                          img: 'https://images.unsplash.com/photo-1519904981063-b0cf448d479e?w=1200&h=800&fit=crop',
-                          desc: 'Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
-                        },
-                        {
-                          title: 'Monument Plaza',
-                          img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=1200&h=800&fit=crop',
-                          desc: 'Curabitur non nulla sit amet nisl tempus convallis quis ac lectus. Vestibulum ante ipsum primis in faucibus.'
-                        },
-                      ].map((c, i) => (
+                      {location.heritageComponents.map((c, i) => (
                         <Grid item xs={12} sm={6} md={4} key={i}>
                           <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: 'rgba(255,255,255,0.03)' }}>
                             <Box component="img" src={c.img} alt={c.title} sx={{ width: '100%', height: 160, objectFit: 'cover' }} />
@@ -332,22 +337,11 @@ export default function LunetaDetailView({ onBack }) {
                     </Grid>
                   </SectionCard>
 
-                  {/* Sensor storytelling retains animated blocks */}
-                  [{
-                    title: 'AI-Powered L.I.L.O.M',
-                    description: 'This dynamic L.I.L.O.M (Light-adaptive Intelligent Layered Outdoor Module) adjusts its axis in real-time, tracking the sun\'s path to provide maximum shade throughout the day. Integrated sensors continuously gather environmental data, making it the central nervous system of our smart park.',
-                    image: 'https://picsum.photos/seed/canopy/1200/700'
-                  }, {
-                    title: 'Air Quality Node',
-                    description: 'Distributed AQ nodes monitor PM2.5, humidity, and temperature to adapt park ventilation and shade logic.',
-                    image: 'https://picsum.photos/seed/aqnode/1200/700'
-                  }, {
-                    title: 'Foot Traffic Vision',
-                    description: 'Anonymous computer vision counts and directionality support crowd-comfort routing and safety alerts.',
-                    image: 'https://picsum.photos/seed/traffic/1200/700'
-                  }].map((b, i, arr) => (
+                  {/* Sensor storytelling with animated blocks */}
+                  {location.sensors.map((b, i) => (
                     <SensorBlock key={i} index={i} scroller={scrollerRef} {...b} />
                   ))}
+                  
                   {/* Spacer to allow last scroll animations to fully complete */}
                   <Box sx={{ height: { xs: 80, md: 120 } }} />
                 </Stack>
@@ -365,7 +359,7 @@ export default function LunetaDetailView({ onBack }) {
                     ))}
                   </Grid>
 
-                  {/* Enhanced Canopy Status - Primary Interface */}
+                  {/* Enhanced L.I.L.O.M Status - Primary Interface */}
                   <Suspense fallback={null}>
                     <CanopyStatusPanel data={advData} onSelectCanopy={setSelectedCanopy} />
                   </Suspense>
@@ -430,7 +424,7 @@ export default function LunetaDetailView({ onBack }) {
         </Box>
       </Container>
 
-      {/* Drill-down Drawer for Selected Canopy */}
+      {/* Drill-down Drawer for Selected L.I.L.O.M */}
       <Drawer 
         anchor="right" 
         open={!!selectedCanopy} 
@@ -582,7 +576,7 @@ export default function LunetaDetailView({ onBack }) {
             <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)' }}>
               <Typography variant="subtitle2" gutterBottom>Data Collection</Typography>
               <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
-                This smart canopy monitors environmental conditions and visitor traffic in real-time.
+                This L.I.L.O.M (Light-adaptive Intelligent Layered Outdoor Module) monitors environmental conditions and visitor traffic in real-time.
               </Typography>
               <Stack spacing={1}>
                 <Stack direction="row" spacing={1} alignItems="center">
@@ -600,7 +594,7 @@ export default function LunetaDetailView({ onBack }) {
                 <Stack direction="row" spacing={1} alignItems="center">
                   <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: 'primary.main' }} />
                   <Typography variant="caption" color="text.secondary">
-                    <strong>Occupancy:</strong> Thermal sensors tracking visitor density beneath canopy
+                    <strong>Visitor Density:</strong> Thermal sensors tracking people beneath L.I.L.O.M coverage
                   </Typography>
                 </Stack>
                 <Stack direction="row" spacing={1} alignItems="center">
@@ -643,28 +637,5 @@ function SectionCard({ title, children }) {
       <Typography variant="subtitle2" gutterBottom>{title}</Typography>
       {children}
     </Paper>
-  )
-}
-
-function DonutGauge({ value, min = 0, max = 100, units = '', thresholds = { warn: 70, danger: 85 } }) {
-  const pct = Math.max(0, Math.min(1, (value - min) / (max - min)))
-  const size = 160
-  const stroke = 16
-  const r = (size - stroke) / 2
-  const c = 2 * Math.PI * r
-  const dash = c * pct
-  const color = value >= thresholds.danger ? statusColors.error.main : value >= thresholds.warn ? statusColors.warning.main : statusColors.success.main
-  return (
-    <Box sx={{ position: 'relative', width: size, height: size }}>
-      <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
-        <circle cx={size/2} cy={size/2} r={r} stroke="rgba(255,255,255,0.12)" strokeWidth={stroke} fill="none" />
-        <circle cx={size/2} cy={size/2} r={r} stroke={color} strokeWidth={stroke} fill="none" strokeLinecap="round"
-          strokeDasharray={`${dash} ${c - dash}`} transform={`rotate(-90 ${size/2} ${size/2})`} />
-      </svg>
-      <Stack alignItems="center" justifyContent="center" sx={{ position: 'absolute', inset: 0 }}>
-        <Typography variant="h5" fontWeight={800}>{value}{units}</Typography>
-        <Typography variant="caption" color="text.secondary">{pct < 0.5 ? 'Comfortable' : (value >= thresholds.danger ? 'High Risk' : 'Warm')}</Typography>
-      </Stack>
-    </Box>
   )
 }

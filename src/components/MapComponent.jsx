@@ -1,13 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useCallback } from 'react'
 import maplibregl from 'maplibre-gl'
+import { getAllLocations, MANILA_CENTER } from '../config/locations'
+import { dataVizColors } from '../config/globeColors'
 
-const MANILA_CENTER = [120.9842, 14.5995]
-const LUNETA = [120.9794, 14.5826]
-
-export default function MapComponent({ onMarkerClick, onMapReady, opacity = 1 }) {
+export default function MapComponent({ onLocationSelect, onMapReady, opacity = 1, selectedLocation = null }) {
   const mapContainer = useRef(null)
   const mapRef = useRef(null)
-  const markerRef = useRef(null)
+  const markersRef = useRef([])
 
   useEffect(() => {
     if (!mapContainer.current) return
@@ -50,65 +49,88 @@ export default function MapComponent({ onMarkerClick, onMapReady, opacity = 1 })
       })
       map.addLayer({ id: 'esri-labels', type: 'raster', source: 'esri-labels', minzoom: 0, maxzoom: 19, paint: { 'raster-opacity': 0.8 } })
 
-      // Luneta vicinity polygon
-      map.addSource('luneta-poly', {
-        type: 'geojson',
-        data: {
-          type: 'Feature',
-          geometry: {
-            type: 'Polygon',
-            coordinates: [[
-              [120.9757, 14.5856],
-              [120.9820, 14.5870],
-              [120.9832, 14.5798],
-              [120.9772, 14.5787],
-              [120.9757, 14.5856]
-            ]]
+      // Add all heritage location polygons
+      const locations = getAllLocations()
+      const colors = {
+        luneta: dataVizColors.map.location,
+        binondo: '#f57c00',
+        intramuros: '#7b1fa2',
+        pasigRiver: '#0097a7'
+      }
+
+      locations.forEach((location) => {
+        const color = colors[location.id] || dataVizColors.map.location
+        const fillId = `${location.id}-fill`
+        const outlineId = `${location.id}-outline`
+
+        // Add polygon source
+        map.addSource(`${location.id}-poly`, {
+          type: 'geojson',
+          data: {
+            type: 'Feature',
+            properties: { locationId: location.id },
+            geometry: {
+              type: 'Polygon',
+              coordinates: [location.polygon]
+            }
           }
-        }
-      })
-      map.addLayer({
-        id: 'luneta-fill',
-        type: 'fill',
-        source: 'luneta-poly',
-        paint: { 'fill-color': '#1976d2', 'fill-opacity': 0.15 }
-      })
-      map.addLayer({
-        id: 'luneta-outline',
-        type: 'line',
-        source: 'luneta-poly',
-        paint: { 'line-color': '#1976d2', 'line-width': 2, 'line-opacity': 0.8 }
+        })
+
+        // Add fill layer
+        map.addLayer({
+          id: fillId,
+          type: 'fill',
+          source: `${location.id}-poly`,
+          paint: { 'fill-color': color, 'fill-opacity': 0.15 }
+        })
+
+        // Add outline layer
+        map.addLayer({
+          id: outlineId,
+          type: 'line',
+          source: `${location.id}-poly`,
+          paint: { 'line-color': color, 'line-width': 2, 'line-opacity': 0.8 }
+        })
+
+        // Hover interaction
+        map.on('mouseenter', fillId, () => {
+          map.getCanvas().style.cursor = 'pointer'
+          map.setPaintProperty(fillId, 'fill-opacity', 0.25)
+          map.setPaintProperty(outlineId, 'line-width', 3)
+        })
+        map.on('mouseleave', fillId, () => {
+          map.getCanvas().style.cursor = ''
+          map.setPaintProperty(fillId, 'fill-opacity', 0.15)
+          map.setPaintProperty(outlineId, 'line-width', 2)
+        })
+
+        // Click interaction
+        map.on('click', fillId, () => {
+          onLocationSelect && onLocationSelect(location.id)
+        })
       })
 
-      // Interactivity: hover + click on polygon
-      map.on('mouseenter', 'luneta-fill', () => {
-        map.getCanvas().style.cursor = 'pointer'
-        map.setPaintProperty('luneta-fill', 'fill-opacity', 0.25)
-        map.setPaintProperty('luneta-outline', 'line-width', 3)
+      // Add pulsing markers for all locations
+      locations.forEach((location) => {
+        const color = colors[location.id] || '#1976d2'
+        const el = document.createElement('div')
+        el.className = 'pulse'
+        el.style.cursor = 'pointer'
+        el.style.setProperty('--pulse-color', color)
+        const marker = new maplibregl.Marker(el)
+          .setLngLat(location.coordinates)
+          .addTo(map)
+        el.addEventListener('click', () => onLocationSelect && onLocationSelect(location.id))
+        markersRef.current.push(marker)
       })
-      map.on('mouseleave', 'luneta-fill', () => {
-        map.getCanvas().style.cursor = ''
-        map.setPaintProperty('luneta-fill', 'fill-opacity', 0.15)
-        map.setPaintProperty('luneta-outline', 'line-width', 2)
-      })
-      map.on('click', 'luneta-fill', () => {
-        onMarkerClick && onMarkerClick()
-      })
-
-      // Pulsing marker
-      const el = document.createElement('div')
-      el.className = 'pulse'
-      el.style.cursor = 'pointer'
-      const marker = new maplibregl.Marker(el).setLngLat(LUNETA).addTo(map)
-      el.addEventListener('click', () => onMarkerClick && onMarkerClick())
 
       mapRef.current = map
-      markerRef.current = marker
       onMapReady && onMapReady(map)
     })
 
     return () => {
-      if (markerRef.current) markerRef.current.remove()
+      markersRef.current.forEach(marker => marker.remove())
+      markersRef.current = []
       map.remove()
       mapRef.current = null
     }
@@ -121,17 +143,72 @@ export default function MapComponent({ onMarkerClick, onMapReady, opacity = 1 })
     }
   }, [opacity])
 
-  return <div ref={mapContainer} className="map-container" />
+  return (
+    <div
+      ref={mapContainer}
+      className="map-container"
+      style={{ width: '100%', height: '100%' }}
+    />
+  )
 }
 
-export function flyToLuneta(map, { zoom = 16, speed = 1.2, curve = 1.6 } = {}) {
+export function flyToLocation(map, locationId, { zoom = 16, speed = 1.2, curve = 1.6 } = {}) {
   return new Promise((resolve) => {
-    if (!map) return resolve()
+    console.log('flyToLocation called with:', { map: !!map, locationId, zoom, speed, curve })
+    
+    if (!map) {
+      console.warn('flyToLocation: map is null')
+      return resolve()
+    }
+    
+    const locations = getAllLocations()
+    const location = locations.find(loc => loc.id === locationId)
+    
+    if (!location) {
+      console.warn('flyToLocation: location not found:', locationId)
+      return resolve()
+    }
+    
+    console.log('flyToLocation: flying to', location.name, 'at', location.coordinates)
+    
+    let resolved = false
+    
     const onEnd = () => {
+      if (resolved) return
+      resolved = true
+      console.log('flyToLocation: moveend event fired')
       map.off('moveend', onEnd)
       resolve()
     }
+    
+    // Fallback timeout in case moveend doesn't fire
+    const timeout = setTimeout(() => {
+      if (resolved) return
+      resolved = true
+      console.warn('flyToLocation: timeout reached, moveend never fired')
+      map.off('moveend', onEnd)
+      resolve()
+    }, 3000) // 3 second timeout
+    
     map.on('moveend', onEnd)
-    map.flyTo({ center: LUNETA, zoom, speed, curve, essential: true })
+    
+    try {
+      map.flyTo({ 
+        center: location.coordinates, 
+        zoom: location.zoom || zoom, 
+        speed, 
+        curve, 
+        essential: true 
+      })
+      console.log('flyToLocation: flyTo called successfully')
+    } catch (error) {
+      console.error('flyToLocation: error calling flyTo:', error)
+      clearTimeout(timeout)
+      map.off('moveend', onEnd)
+      if (!resolved) {
+        resolved = true
+        resolve()
+      }
+    }
   })
 }

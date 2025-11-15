@@ -4,8 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import MapComponent, { flyToLuneta } from '../components/MapComponent'
 import DashboardComponent from '../components/DashboardComponent'
 import LunetaDetailView from './LunetaDetailView'
-const GovDashboard = lazy(() => import('../components/GovDashboard'))
-const AdvancedDashboardOverlay = lazy(() => import('../components/advanced/AdvancedDashboardOverlay'))
+const UrbanSenseControlRoom = lazy(() => import('../components/UrbanSenseControlRoom'))
 import DashboardCustomizeRoundedIcon from '@mui/icons-material/DashboardCustomizeRounded'
 import QueryStatsRoundedIcon from '@mui/icons-material/QueryStatsRounded'
 
@@ -14,8 +13,7 @@ export default function MainView() {
   const [view, setView] = useState('map') // 'map' | 'detail'
   const [mapOpacity, setMapOpacity] = useState(1)
   const mapInstanceRef = useRef(null)
-  const [govOpen, setGovOpen] = useState(false)
-  const [advOpen, setAdvOpen] = useState(false)
+  const [controlOpen, setControlOpen] = useState(false)
 
   const handleMarkerClick = () => setDashboardOpen(true)
 
@@ -36,7 +34,10 @@ export default function MainView() {
   }
 
   return (
-    <Box className="crossfade">
+    <Box
+      className="crossfade"
+      sx={{ position: 'relative', width: '100%', height: '100vh', overflow: 'hidden' }}
+    >
       {view === 'map' && (
         <MapComponent
           onMarkerClick={handleMarkerClick}
@@ -53,26 +54,22 @@ export default function MainView() {
         </motion.div>
       )}</AnimatePresence>
 
-      {/* Open Government Dashboard */}
+      {/* Open UrbanSense Control Room */}
       {view === 'map' && (
-        <Tooltip title="Open Government Dashboard">
-          <Fab color="primary" size="medium" onClick={() => setGovOpen(true)} sx={{ position: 'absolute', top: 16, left: 16, zIndex: 21 }}>
+        <Tooltip title="Open UrbanSense Control Room">
+          <Fab
+            color="primary"
+            size="medium"
+            onClick={() => setControlOpen(true)}
+            sx={{ position: 'absolute', top: 16, left: 16, zIndex: 21 }}
+          >
             <DashboardCustomizeRoundedIcon />
-          </Fab>
-        </Tooltip>
-      )}
-      {/* Open Advanced Analytics */}
-      {view === 'map' && (
-        <Tooltip title="Open Advanced Analytics">
-          <Fab color="secondary" size="medium" onClick={() => setAdvOpen(true)} sx={{ position: 'absolute', top: 16, left: 80, zIndex: 21 }}>
-            <QueryStatsRoundedIcon />
           </Fab>
         </Tooltip>
       )}
 
       <Suspense fallback={null}>
-        <GovDashboard open={govOpen} onClose={() => setGovOpen(false)} />
-        <AdvancedDashboardOverlay open={advOpen} onClose={() => setAdvOpen(false)} />
+        <UrbanSenseControlRoom open={controlOpen} onClose={() => setControlOpen(false)} />
       </Suspense>
     </Box>
   )}

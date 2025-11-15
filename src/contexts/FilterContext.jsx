@@ -5,7 +5,21 @@ const FilterContext = createContext(null)
 export function FilterProvider({ children }) {
   const [timeRange, setTimeRange] = useState('24h')
   const [mapLayer, setMapLayer] = useState('foot') // 'foot' | 'aqi'
-  const value = useMemo(() => ({ timeRange, setTimeRange, mapLayer, setMapLayer }), [timeRange, mapLayer])
+  const [selectedCellId, setSelectedCellId] = useState(null)
+  const [timeBrush, setTimeBrush] = useState(null) // { startIndex, endIndex } | null
+  const value = useMemo(
+    () => ({
+      timeRange,
+      setTimeRange,
+      mapLayer,
+      setMapLayer,
+      selectedCellId,
+      setSelectedCellId,
+      timeBrush,
+      setTimeBrush
+    }),
+    [timeRange, mapLayer, selectedCellId, timeBrush]
+  )
   return <FilterContext.Provider value={value}>{children}</FilterContext.Provider>
 }
 

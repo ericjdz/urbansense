@@ -1,6 +1,14 @@
 import { Paper, Typography } from '@mui/material'
+import { dataVizColors } from '../../config/globeColors'
+
+const fill = (type) => {
+  if (type === 'gateway') return '#4caf50'
+  return '#2196f3'
+}
 
 export default function NetworkGraphPanel({ data }) {
+  if (!data || !data.network) return null
+  
   // Simple radial layout SVG
   const R = 140
   const cx = 200, cy = 200
@@ -31,10 +39,10 @@ export default function NetworkGraphPanel({ data }) {
 
 function fill(type) {
   switch (type) {
-    case 'gateway': return '#64B6F7'
-    case 'aq': return '#81C784'
-    case 'canopy': return '#FFD54F'
-    case 'camera': return '#E57373'
+    case 'gateway': return dataVizColors.network.gateway
+    case 'aq': return dataVizColors.network.sensor
+    case 'canopy': return dataVizColors.network.canopy
+    case 'camera': return dataVizColors.network.camera
     default: return '#B0BEC5'
   }
 }
