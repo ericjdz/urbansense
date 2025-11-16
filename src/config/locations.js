@@ -177,38 +177,38 @@ export const LOCATIONS = {
       {
         title: 'Commercial Activity Monitor',
         description: 'Foot traffic analytics support business district planning while respecting privacy. Anonymized counts help optimize shade deployment during peak shopping hours. Globe 5G network ensures real-time data streaming from all monitoring points.',
-        image: '/src/renders/binondo/binondo4.png'
+        image: '/renders/binondo/binondo4.png'
       },
       {
         title: 'Heritage Climate Node',
         description: 'Discrete environmental sensors mounted on heritage structures monitor microclimate without visual intrusion. All sensor data is transmitted instantly via Globe\'s 5G infrastructure for coordinated climate control responses.',
-        image: '/src/renders/binondo/binondo5.png'
+        image: '/renders/binondo/binondo5.png'
       },
       {
         title: 'Street-Level AQ Station',
         description: 'Air quality monitoring at pedestrian height tracks pollution from vehicle traffic, informing ventilation strategies. Globe 5G enables continuous, high-bandwidth data transmission for comprehensive air quality mapping.',
-        image: '/src/renders/binondo/binondo6.png'
+        image: '/renders/binondo/binondo6.png'
       },
       {
         title: 'Smart Heritage Canopy',
         description: 'Integrated L.I.L.O.M units provide shade, environmental monitoring, and visitor comfort throughout the heritage district. Powered by Globe 5G for seamless IoT connectivity and edge computing capabilities.',
-        image: '/src/renders/binondo/binondo7.png'
+        image: '/renders/binondo/binondo7.png'
       },
       {
         title: 'Urban Microclimate Network',
         description: 'Distributed sensors create a comprehensive environmental monitoring network across the heritage commercial zone. Globe\'s 5G network backbone enables synchronized multi-sensor data fusion and predictive analytics.',
-        image: '/src/renders/binondo/binondo8.png'
+        image: '/renders/binondo/binondo8.png'
       },
       {
         title: 'Heritage Integration System',
         description: 'Technology seamlessly blends with historic architecture to enhance visitor experience without compromising cultural character. Globe 5G infrastructure powers invisible connectivity with minimal visual impact.',
-        image: '/src/renders/binondo/binondo9.png'
+        image: '/renders/binondo/binondo9.png'
       }
     ],
     carouselImages: [
-      '/src/renders/binondo/binondo1.png',
-      '/src/renders/binondo/binondo2.png',
-      '/src/renders/binondo/binondo3.png'
+      '/renders/binondo/binondo1.png',
+      '/renders/binondo/binondo2.png',
+      '/renders/binondo/binondo3.png'
     ]
   },
 
@@ -288,18 +288,18 @@ export const LOCATIONS = {
       {
         title: 'Heritage Conservation Monitor',
         description: 'Multi-sensor arrays track temperature, humidity, and structural vibration to support preventive conservation of UNESCO heritage structures. Globe 5G network enables real-time alerts for critical conservation parameters.',
-        image: '/src/renders/intramuros/intramuros4.png'
+        image: '/renders/intramuros/intramuros4.png'
       },
       {
         title: 'Tourist Comfort Analytics',
         description: 'Visitor flow and comfort metrics optimize tour routing and shade deployment for sustainable heritage tourism. Powered by Globe 5G for instant crowd analytics and dynamic route guidance.',
-        image: '/src/renders/intramuros/intramuros3.png'
+        image: '/renders/intramuros/intramuros3.png'
       }
     ],
     carouselImages: [
-      '/src/renders/intramuros/intramuros1.png',
-      '/src/renders/intramuros/intramuros2.png',
-      '/src/renders/intramuros/intramuros5.png'
+      '/renders/intramuros/intramuros1.png',
+      '/renders/intramuros/intramuros2.png',
+      '/renders/intramuros/intramuros5.png'
     ]
   },
 
@@ -379,28 +379,28 @@ export const LOCATIONS = {
       {
         title: 'Smart Lighting & Safety Monitor',
         description: 'Intelligent streetlight systems with integrated security cameras monitor the esplanade for public safety. Globe 5G network enables real-time video analytics, automated emergency alerts, and adaptive lighting based on pedestrian presence and ambient conditions.',
-        image: '/src/renders/pasig/pasig4.png'
+        image: '/renders/pasig/pasig4.png'
       },
       {
         title: 'Riverbank Climate Station',
         description: 'Weather stations along the esplanade measure wind, temperature, and humidity to optimize shade deployment and predict flood conditions. Globe\'s 5G infrastructure enables real-time weather data integration with citywide alert systems.',
-        image: '/src/renders/pasig/pasig5.png'
+        image: '/renders/pasig/pasig5.png'
       },
       {
         title: 'Esplanade Activity Tracker',
         description: 'Vision-based counting systems measure pedestrian and cyclist usage, informing infrastructure investment and maintenance schedules. Powered by Globe 5G for edge AI processing and instant analytics.',
-        image: '/src/renders/pasig/pasig6.png'
+        image: '/renders/pasig/pasig6.png'
       },
       {
         title: 'Riverfront L.I.L.O.M Network',
         description: 'Smart canopy installations along the esplanade provide shade while monitoring environmental conditions and visitor comfort. Globe 5G network backbone connects all L.I.L.O.M units into a coordinated smart infrastructure system with solar energy tracking and microgrid management.',
-        image: '/src/renders/pasig/pasig7.png'
+        image: '/renders/pasig/pasig7.png'
       }
     ],
     carouselImages: [
-      '/src/renders/pasig/pasig1.png',
-      '/src/renders/pasig/pasig2.png',
-      '/src/renders/pasig/pasig3.png'
+      '/renders/pasig/pasig1.png',
+      '/renders/pasig/pasig2.png',
+      '/renders/pasig/pasig3.png'
     ]
   }
 }
