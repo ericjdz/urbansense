@@ -28,6 +28,10 @@ export const LOCATIONS = {
     description: 'Luneta Park is a national heritage landscape featuring iconic monuments, cultural venues, and civic spaces. Smart Heritage Canopies aim to protect comfort and walkability while preserving sightlines and historical integrity.',
     highlights: [
       {
+        title: 'Globe 5G Network Infrastructure',
+        desc: 'High-speed 5G connectivity powers real-time sensor data transmission, enabling instant environmental monitoring and visitor analytics across the entire heritage site.'
+      },
+      {
         title: 'Rizal Monument',
         desc: 'Central obelisk and statue marking Dr. José Rizal\'s resting place. Preserved sightlines and ambient lighting.'
       },
@@ -75,17 +79,17 @@ export const LOCATIONS = {
     sensors: [
       {
         title: 'AI-Powered Smart Canopy',
-        description: 'This dynamic canopy adjusts its axis in real-time, tracking the sun\'s path to provide maximum shade throughout the day. Integrated sensors continuously gather environmental data, making it the central nervous system of our smart park.',
+        description: 'This dynamic canopy adjusts its axis in real-time, tracking the sun\'s path to provide maximum shade throughout the day. Integrated sensors continuously gather environmental data via Globe\'s 5G network, transmitting real-time analytics to the central control system.',
         image: 'https://picsum.photos/seed/canopy/1200/700'
       },
       {
         title: 'Air Quality Node',
-        description: 'Distributed AQ nodes monitor PM2.5, humidity, and temperature to adapt park ventilation and shade logic.',
+        description: 'Distributed AQ nodes monitor PM2.5, humidity, and temperature to adapt park ventilation and shade logic. All data streams through Globe\'s ultra-fast 5G infrastructure for instant analysis and response.',
         image: 'https://picsum.photos/seed/aqnode/1200/700'
       },
       {
         title: 'Foot Traffic Vision',
-        description: 'Anonymous computer vision counts and directionality support crowd-comfort routing and safety alerts.',
+        description: 'Anonymous computer vision counts and directionality support crowd-comfort routing and safety alerts. Globe 5G ensures millisecond-latency data transmission for real-time crowd management.',
         image: 'https://picsum.photos/seed/traffic/1200/700'
       }
     ],
@@ -120,6 +124,10 @@ export const LOCATIONS = {
     district: 'Binondo, Manila',
     description: 'Binondo, established in 1594, is the world\'s oldest Chinatown and a vibrant commercial heritage district. Smart Heritage Canopies enhance pedestrian comfort along historic commercial corridors while preserving the district\'s cultural character and supporting sustainable urban commerce.',
     highlights: [
+      {
+        title: 'Globe 5G Smart District Network',
+        desc: 'Globe\'s 5G infrastructure powers a mesh network of IoT sensors across Binondo\'s commercial corridors, enabling real-time foot traffic analytics, air quality monitoring, and smart canopy coordination.'
+      },
       {
         title: 'Ongpin Street',
         desc: 'Historic commercial spine with traditional shophouses. Smart canopies provide shade while maintaining street character.'
@@ -168,25 +176,39 @@ export const LOCATIONS = {
     sensors: [
       {
         title: 'Commercial Activity Monitor',
-        description: 'Foot traffic analytics support business district planning while respecting privacy. Anonymized counts help optimize shade deployment during peak shopping hours.',
-        image: 'https://picsum.photos/seed/binondo-activity/1200/700'
+        description: 'Foot traffic analytics support business district planning while respecting privacy. Anonymized counts help optimize shade deployment during peak shopping hours. Globe 5G network ensures real-time data streaming from all monitoring points.',
+        image: '/src/renders/binondo/binondo4.png'
       },
       {
         title: 'Heritage Climate Node',
-        description: 'Discrete environmental sensors mounted on heritage structures monitor microclimate without visual intrusion.',
-        image: 'https://picsum.photos/seed/binondo-climate/1200/700'
+        description: 'Discrete environmental sensors mounted on heritage structures monitor microclimate without visual intrusion. All sensor data is transmitted instantly via Globe\'s 5G infrastructure for coordinated climate control responses.',
+        image: '/src/renders/binondo/binondo5.png'
       },
       {
         title: 'Street-Level AQ Station',
-        description: 'Air quality monitoring at pedestrian height tracks pollution from vehicle traffic, informing ventilation strategies.',
-        image: 'https://picsum.photos/seed/binondo-aqi/1200/700'
+        description: 'Air quality monitoring at pedestrian height tracks pollution from vehicle traffic, informing ventilation strategies. Globe 5G enables continuous, high-bandwidth data transmission for comprehensive air quality mapping.',
+        image: '/src/renders/binondo/binondo6.png'
+      },
+      {
+        title: 'Smart Heritage Canopy',
+        description: 'Integrated L.I.L.O.M units provide shade, environmental monitoring, and visitor comfort throughout the heritage district. Powered by Globe 5G for seamless IoT connectivity and edge computing capabilities.',
+        image: '/src/renders/binondo/binondo7.png'
+      },
+      {
+        title: 'Urban Microclimate Network',
+        description: 'Distributed sensors create a comprehensive environmental monitoring network across the heritage commercial zone. Globe\'s 5G network backbone enables synchronized multi-sensor data fusion and predictive analytics.',
+        image: '/src/renders/binondo/binondo8.png'
+      },
+      {
+        title: 'Heritage Integration System',
+        description: 'Technology seamlessly blends with historic architecture to enhance visitor experience without compromising cultural character. Globe 5G infrastructure powers invisible connectivity with minimal visual impact.',
+        image: '/src/renders/binondo/binondo9.png'
       }
     ],
     carouselImages: [
-      'https://images.unsplash.com/photo-1555881622-2cdf0ede8e84?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1580537659466-0a9bfa916a54?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1514924013411-cbf25faa35bb?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1920&h=1080&fit=crop'
+      '/src/renders/binondo/binondo1.png',
+      '/src/renders/binondo/binondo2.png',
+      '/src/renders/binondo/binondo3.png'
     ]
   },
 
@@ -213,6 +235,10 @@ export const LOCATIONS = {
     district: 'Intramuros, Manila',
     description: 'Intramuros, the historic walled city built in 1571, represents Spanish colonial heritage in the Philippines. Smart Heritage Canopies balance archaeological preservation with visitor comfort, supporting sustainable heritage tourism while protecting UNESCO-endorsed structures and maintaining historical sight lines.',
     highlights: [
+      {
+        title: 'Globe 5G Heritage Network',
+        desc: 'Globe\'s 5G infrastructure provides ultra-reliable connectivity for heritage conservation sensors, tourist comfort systems, and archaeological site monitoring while respecting the historic character of the walled city.'
+      },
       {
         title: 'Fort Santiago',
         desc: 'Spanish citadel with strategic shading along visitor paths and climate monitoring for artifact preservation.'
@@ -261,25 +287,19 @@ export const LOCATIONS = {
     sensors: [
       {
         title: 'Heritage Conservation Monitor',
-        description: 'Multi-sensor arrays track temperature, humidity, and structural vibration to support preventive conservation of UNESCO heritage structures.',
-        image: 'https://picsum.photos/seed/intra-conservation/1200/700'
+        description: 'Multi-sensor arrays track temperature, humidity, and structural vibration to support preventive conservation of UNESCO heritage structures. Globe 5G network enables real-time alerts for critical conservation parameters.',
+        image: '/src/renders/intramuros/intramuros4.png'
       },
       {
         title: 'Tourist Comfort Analytics',
-        description: 'Visitor flow and comfort metrics optimize tour routing and shade deployment for sustainable heritage tourism.',
-        image: 'https://picsum.photos/seed/intra-tourist/1200/700'
-      },
-      {
-        title: 'Archaeological Site Monitor',
-        description: 'Environmental sensors protect exposed archaeological features from weathering and inform preservation strategies.',
-        image: 'https://picsum.photos/seed/intra-archaeo/1200/700'
+        description: 'Visitor flow and comfort metrics optimize tour routing and shade deployment for sustainable heritage tourism. Powered by Globe 5G for instant crowd analytics and dynamic route guidance.',
+        image: '/src/renders/intramuros/intramuros3.png'
       }
     ],
     carouselImages: [
-      'https://images.unsplash.com/photo-1581783898377-1c85bf937427?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1534329539061-64caeb388c42?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1595846519845-68e298c2edd8?w=1920&h=1080&fit=crop'
+      '/src/renders/intramuros/intramuros1.png',
+      '/src/renders/intramuros/intramuros2.png',
+      '/src/renders/intramuros/intramuros5.png'
     ]
   },
 
@@ -304,11 +324,15 @@ export const LOCATIONS = {
       maxLat: 14.6020
     },
     district: 'Manila-Makati Corridor',
-    description: 'The Pasig River, historically Manila\'s lifeline, is undergoing ecological restoration. Smart Heritage Canopies along the esplanade enhance riverfront accessibility, support water quality monitoring, and create comfortable public spaces that reconnect communities with their river heritage.',
+    description: 'The Pasig River, historically Manila\'s lifeline, is undergoing ecological restoration. Smart Heritage Canopies along the esplanade enhance riverfront accessibility, support active mobility tracking, and create comfortable public spaces that reconnect communities with their river heritage.',
     highlights: [
       {
+        title: 'Globe 5G Riverfront Network',
+        desc: 'Globe\'s 5G connectivity powers an integrated waterfront monitoring system, transmitting real-time environmental data, weather conditions, active mobility analytics, and visitor safety information to enhance public engagement.'
+      },
+      {
         title: 'Escolta Pier',
-        desc: 'Historic ferry landing revitalized with shade pavilions and real-time water quality displays for river tourism.'
+        desc: 'Historic ferry landing revitalized with shade pavilions and real-time transportation displays for river tourism and ferry commuters.'
       },
       {
         title: 'Lawton Esplanade',
@@ -323,7 +347,7 @@ export const LOCATIONS = {
       {
         title: 'Waterfront Pavilion',
         img: 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1200&h=800&fit=crop',
-        desc: 'Elevated viewing platforms with integrated shade, offering panoramic river views while monitoring water conditions.'
+        desc: 'Elevated viewing platforms with integrated shade, offering panoramic river views while providing smart lighting and public WiFi connectivity.'
       },
       {
         title: 'Esplanade Canopy Walk',
@@ -353,26 +377,30 @@ export const LOCATIONS = {
     ],
     sensors: [
       {
-        title: 'Water Quality Monitor',
-        description: 'Continuous sensors track pH, dissolved oxygen, turbidity, and pollutants, providing real-time river health data to support restoration efforts.',
-        image: 'https://picsum.photos/seed/pasig-water/1200/700'
+        title: 'Smart Lighting & Safety Monitor',
+        description: 'Intelligent streetlight systems with integrated security cameras monitor the esplanade for public safety. Globe 5G network enables real-time video analytics, automated emergency alerts, and adaptive lighting based on pedestrian presence and ambient conditions.',
+        image: '/src/renders/pasig/pasig4.png'
       },
       {
         title: 'Riverbank Climate Station',
-        description: 'Weather stations along the esplanade measure wind, temperature, and humidity to optimize shade deployment and predict flood conditions.',
-        image: 'https://picsum.photos/seed/pasig-climate/1200/700'
+        description: 'Weather stations along the esplanade measure wind, temperature, and humidity to optimize shade deployment and predict flood conditions. Globe\'s 5G infrastructure enables real-time weather data integration with citywide alert systems.',
+        image: '/src/renders/pasig/pasig5.png'
       },
       {
         title: 'Esplanade Activity Tracker',
-        description: 'Vision-based counting systems measure pedestrian and cyclist usage, informing infrastructure investment and maintenance schedules.',
-        image: 'https://picsum.photos/seed/pasig-activity/1200/700'
+        description: 'Vision-based counting systems measure pedestrian and cyclist usage, informing infrastructure investment and maintenance schedules. Powered by Globe 5G for edge AI processing and instant analytics.',
+        image: '/src/renders/pasig/pasig6.png'
+      },
+      {
+        title: 'Riverfront L.I.L.O.M Network',
+        description: 'Smart canopy installations along the esplanade provide shade while monitoring environmental conditions and visitor comfort. Globe 5G network backbone connects all L.I.L.O.M units into a coordinated smart infrastructure system with solar energy tracking and microgrid management.',
+        image: '/src/renders/pasig/pasig7.png'
       }
     ],
     carouselImages: [
-      'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=1920&h=1080&fit=crop',
-      'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=1920&h=1080&fit=crop'
+      '/src/renders/pasig/pasig1.png',
+      '/src/renders/pasig/pasig2.png',
+      '/src/renders/pasig/pasig3.png'
     ]
   }
 }

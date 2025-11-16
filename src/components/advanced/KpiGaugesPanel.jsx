@@ -7,7 +7,7 @@ export default function KpiGaugesPanel({ data }) {
   return (
     <Grid container spacing={1.5} sx={{ height: '100%' }}>
       <Grid item xs={12} md={4}>
-        <KpiCard title="Avg People Per Canopy" value={Math.round(avgOcc)} color={globeColors.primary.main} />
+        <KpiCard title="Avg People Per L.I.L.O.M" value={Math.round(avgOcc)} color={globeColors.primary.main} />
       </Grid>
       <Grid item xs={12} md={4}>
         <KpiCard title="Current AQI" value={avgAqi} color="#90CAF9" />

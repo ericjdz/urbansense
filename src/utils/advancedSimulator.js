@@ -1,6 +1,6 @@
 // Advanced simulator for maps, trends, flows, and correlated spatio-temporal visuals
 
-export function generateAdvancedData({ hours = 24, bounds = null } = {}) {
+export function generateAdvancedData({ hours = 24, bounds = null, location = null } = {}) {
   const gridW = 24
   const gridH = 16
   
@@ -132,13 +132,58 @@ export function generateAdvancedData({ hours = 24, bounds = null } = {}) {
     ]
   }
 
-  // Simple engagement funnel per heritage site / canopy cluster
-  const engagementSites = [
-    { id: 'RIZAL', name: 'Rizal Monument', passers: 1400 },
-    { id: 'MUSEUM', name: 'Museum Gate', passers: 950 },
-    { id: 'THEATER', name: 'Open-Air Auditorium', passers: 680 },
-    { id: 'GARDEN', name: 'Garden Walk', passers: 520 }
-  ].map(site => {
+  // Simple engagement funnel per heritage site / canopy cluster - location-specific famous sites
+  const getEngagementSitesForLocation = (loc) => {
+    if (!loc) {
+      // Default Luneta sites
+      return [
+        { id: 'RIZAL', name: 'Rizal Monument', passers: 1400 },
+        { id: 'MUSEUM', name: 'Museum Gate', passers: 950 },
+        { id: 'THEATER', name: 'Open-Air Auditorium', passers: 680 },
+        { id: 'GARDEN', name: 'Garden Walk', passers: 520 }
+      ]
+    }
+    
+    switch(loc.id) {
+      case 'luneta':
+        return [
+          { id: 'RIZAL', name: 'Rizal Monument', passers: 1400 },
+          { id: 'MUSEUM', name: 'National Museum Complex', passers: 950 },
+          { id: 'THEATER', name: 'Open-Air Auditorium', passers: 680 },
+          { id: 'GARDEN', name: 'Japanese Garden', passers: 520 }
+        ]
+      case 'binondo':
+        return [
+          { id: 'ONGPIN', name: 'Ongpin Street', passers: 1850 },
+          { id: 'BINONDO_CHURCH', name: 'Binondo Church', passers: 1200 },
+          { id: 'ESCOLTA', name: 'Escolta Street', passers: 780 },
+          { id: 'CHINATOWN', name: 'Chinatown Arch', passers: 640 }
+        ]
+      case 'intramuros':
+        return [
+          { id: 'FORT_SANTIAGO', name: 'Fort Santiago', passers: 1650 },
+          { id: 'MANILA_CATHEDRAL', name: 'Manila Cathedral', passers: 1100 },
+          { id: 'SAN_AGUSTIN', name: 'San Agustin Church', passers: 920 },
+          { id: 'BALUARTE', name: 'Baluarte de San Diego', passers: 580 }
+        ]
+      case 'pasigRiver':
+        return [
+          { id: 'ESCOLTA_PIER', name: 'Escolta Pier', passers: 980 },
+          { id: 'JONES_BRIDGE', name: 'Jones Bridge', passers: 1150 },
+          { id: 'LAWTON', name: 'Lawton Esplanade', passers: 850 },
+          { id: 'RIVER_PROMENADE', name: 'River Promenade', passers: 720 }
+        ]
+      default:
+        return [
+          { id: 'SITE1', name: 'Heritage Site 1', passers: 1400 },
+          { id: 'SITE2', name: 'Heritage Site 2', passers: 950 },
+          { id: 'SITE3', name: 'Heritage Site 3', passers: 680 },
+          { id: 'SITE4', name: 'Heritage Site 4', passers: 520 }
+        ]
+    }
+  }
+  
+  const engagementSites = getEngagementSitesForLocation(location).map(site => {
     const notified = Math.round(site.passers * rand(0.6, 0.8))
     const opened = Math.round(notified * rand(0.45, 0.6))
     const engaged = Math.round(opened * rand(0.6, 0.75))

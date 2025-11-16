@@ -9,7 +9,7 @@ export default function CanopyStatusPanel({ data, onSelectCanopy }) {
   return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 3, bgcolor: 'rgba(255,255,255,0.03)' }}>
       <Stack direction="row" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="subtitle2">Smart Canopy Network Status</Typography>
+        <Typography variant="subtitle2">L.I.L.O.M Network Status</Typography>
         <Chip 
           size="small" 
           icon={<SensorsRoundedIcon sx={{ fontSize: 14 }} />} 
@@ -82,7 +82,7 @@ export default function CanopyStatusPanel({ data, onSelectCanopy }) {
       </List>
       
       <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mt: 2, fontStyle: 'italic' }}>
-        Click any canopy to view detailed metrics, trends, and take actions
+        Click any L.I.L.O.M unit to view detailed metrics, trends, and take actions
       </Typography>
     </Paper>
   )

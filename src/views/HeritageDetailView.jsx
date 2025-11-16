@@ -118,7 +118,8 @@ export default function HeritageDetailView() {
   const [selectedCanopy, setSelectedCanopy] = useState(null)
   const [advData, setAdvData] = useState(() => generateAdvancedData({ 
     hours: 24,
-    bounds: location?.bounds
+    bounds: location?.bounds,
+    location: location
   }))
 
   // Fade in on mount
@@ -139,7 +140,8 @@ export default function HeritageDetailView() {
     const id2 = setInterval(() => setGovSnap(generateGovernmentSnapshot()), 6000)
     const id3 = setInterval(() => setAdvData(generateAdvancedData({ 
       hours: timeRange === '24h' ? 24 : 168,
-      bounds: location?.bounds
+      bounds: location?.bounds,
+      location: location
     })), 6000)
     return () => { clearInterval(id1); clearInterval(id2); clearInterval(id3) }
   }, [timeRange, location])
@@ -148,7 +150,8 @@ export default function HeritageDetailView() {
     // regenerate when timeRange changes
     setAdvData(generateAdvancedData({ 
       hours: timeRange === '24h' ? 24 : 168,
-      bounds: location?.bounds
+      bounds: location?.bounds,
+      location: location
     }))
   }, [timeRange, location])
 
@@ -314,23 +317,6 @@ export default function HeritageDetailView() {
                           <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.03)' }}>
                             <Typography variant="subtitle1" fontWeight={700}>{h.title}</Typography>
                             <Typography variant="body2" color="text.secondary">{h.desc}</Typography>
-                          </Paper>
-                        </Grid>
-                      ))}
-                    </Grid>
-                  </SectionCard>
-
-                  {/* Heritage Components */}
-                  <SectionCard title="Heritage Components">
-                    <Grid container spacing={1.5}>
-                      {location.heritageComponents.map((c, i) => (
-                        <Grid item xs={12} sm={6} md={4} key={i}>
-                          <Paper variant="outlined" sx={{ borderRadius: 3, overflow: 'hidden', bgcolor: 'rgba(255,255,255,0.03)' }}>
-                            <Box component="img" src={c.img} alt={c.title} sx={{ width: '100%', height: 160, objectFit: 'cover' }} />
-                            <Box sx={{ p: 2 }}>
-                              <Typography variant="subtitle1" fontWeight={700}>{c.title}</Typography>
-                              <Typography variant="body2" color="text.secondary">{c.desc}</Typography>
-                            </Box>
                           </Paper>
                         </Grid>
                       ))}

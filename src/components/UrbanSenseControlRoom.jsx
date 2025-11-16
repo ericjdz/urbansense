@@ -370,7 +370,7 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
           )}
 
           {/* Insightful KPI strip with trends and deltas - Aggregated across selected locations */}
-          <Grid container spacing={{ xs: 1, sm: 1.25, md: 1.5 }}>
+          <Grid container spacing={{ xs: 0.75, sm: 1, md: 1 }}>
             <Grid item xs={6} sm={4} md={2}>
               <TrendKpiCard
                 icon={<BoltRoundedIcon color="warning" />}
@@ -731,24 +731,24 @@ function TrendKpiCard({ icon, label, unit = '', series = [], current, locations 
   }
 
   return (
-    <Paper variant="outlined" sx={{ p: { xs: 1.25, sm: 1.75 }, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-      <Stack spacing={0.75}>
-        <Stack direction="row" spacing={1} alignItems="center">
-          <Box sx={{ width: { xs: 24, sm: 28 }, height: { xs: 24, sm: 28 }, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { fontSize: { xs: '1rem', sm: '1.25rem' } } }}>{icon}</Box>
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}>{label}</Typography>
+    <Paper variant="outlined" sx={{ p: { xs: 0.75, sm: 1 }, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+      <Stack spacing={0.5}>
+        <Stack direction="row" spacing={0.75} alignItems="center">
+          <Box sx={{ width: { xs: 20, sm: 24 }, height: { xs: 20, sm: 24 }, borderRadius: '50%', bgcolor: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', '& svg': { fontSize: { xs: '0.875rem', sm: '1rem' } } }}>{icon}</Box>
+          <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.625rem', sm: '0.7rem' }, lineHeight: 1.2 }}>{label}</Typography>
         </Stack>
-        <Stack direction="row" spacing={1} alignItems="baseline" flexWrap="wrap">
-          <Typography variant="h6" fontWeight={800} color={valueColor} sx={{ fontSize: { xs: '1rem', sm: '1.25rem' } }}>{`${Math.round(current)}${unit}`}</Typography>
+        <Stack direction="row" spacing={0.75} alignItems="baseline" flexWrap="wrap">
+          <Typography variant="h6" fontWeight={800} color={valueColor} sx={{ fontSize: { xs: '0.95rem', sm: '1.1rem' } }}>{`${Math.round(current)}${unit}`}</Typography>
           {prev != null && locations === 1 && (
-            <Typography variant="caption" color={direction === 'up' ? 'success.main' : direction === 'down' ? 'error.main' : 'text.secondary'} sx={{ fontSize: { xs: '0.65rem', sm: '0.75rem' } }}>
+            <Typography variant="caption" color={direction === 'up' ? 'success.main' : direction === 'down' ? 'error.main' : 'text.secondary'} sx={{ fontSize: { xs: '0.6rem', sm: '0.65rem' } }}>
               {deltaVal > 0 ? '+' : ''}{Math.round(deltaVal)}{unit} ({deltaPct > 0 ? '+' : ''}{deltaPct}%)
             </Typography>
           )}
         </Stack>
-        <Box sx={{ height: 38 }}>
+        <Box sx={{ height: 28 }}>
           {sparkData.length > 1 && locations === 1 && (
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={sparkData} margin={{ top: 4, right: 0, bottom: 0, left: 0 }}>
+              <LineChart data={sparkData} margin={{ top: 2, right: 0, bottom: 0, left: 0 }}>
                 <XAxis dataKey="idx" hide />
                 <YAxis hide domain={['dataMin', 'dataMax']} />
                 <RTooltip contentStyle={{ display: 'none' }} />
@@ -757,7 +757,7 @@ function TrendKpiCard({ icon, label, unit = '', series = [], current, locations 
             </ResponsiveContainer>
           )}
         </Box>
-        <Typography variant="caption" color="text.secondary">{insight}</Typography>
+        <Typography variant="caption" color="text.secondary" sx={{ fontSize: { xs: '0.6rem', sm: '0.65rem' }, lineHeight: 1.2 }}>{insight}</Typography>
       </Stack>
     </Paper>
   )
