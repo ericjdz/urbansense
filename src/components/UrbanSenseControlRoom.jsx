@@ -28,11 +28,17 @@ import { generateAdvancedData } from '../utils/advancedSimulator'
 import TimeSeriesPanel from './advanced/TimeSeriesPanel'
 import CanopyStatusPanel from './advanced/CanopyStatusPanel'
 import EngagementPanel from './advanced/EngagementPanel'
+import AIInsightsModal from './advanced/AIInsightsModal'
+import { generateAIInsights } from '../utils/aiInsightsGenerator'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 
 export default function UrbanSenseControlRoom({ open, onClose }) {
   const { timeRange, setTimeRange, publicSnap, govSnap, advData, govHistory, advHistory } = useUrbanSenseData()
   const [lens, setLens] = useState(0) // 0 Overview, 1 Operations, 2 Env & Crowd, 3 Engagement, 4 Comparison
   const allLocations = useMemo(() => getAllLocations(), [])
+  const [aiInsightsOpen, setAiInsightsOpen] = useState(false)
+  const [aiInsights, setAiInsights] = useState([])
+  const [aiInsightsLoading, setAiInsightsLoading] = useState(false)
   const [selectedLocationIds, setSelectedLocationIds] = useState(() => allLocations.map(l => l.id)) // Default to all locations
   const [locationData, setLocationData] = useState(new Map()) // Map<locationId, {govSnap, advData}>
   const [isLoading, setIsLoading] = useState(false)
@@ -101,6 +107,29 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
   
   const handleClearAll = () => {
     setSelectedLocationIds(allLocations.map(l => l.id)) // Reset to all locations
+  }
+
+  // Handle AI Insights generation
+  const handleAIInsights = async () => {
+    setAiInsightsOpen(true)
+    setAiInsightsLoading(true)
+    
+    try {
+      const context = {
+        locationIds: selectedLocationIds,
+        timeRange,
+        data: { advData, govSnap, publicSnap },
+        dashboardType: 'control-room'
+      }
+      
+      const result = await generateAIInsights(context)
+      setAiInsights(result.insights)
+    } catch (error) {
+      console.error('Error generating AI insights:', error)
+      setAiInsights([])
+    } finally {
+      setAiInsightsLoading(false)
+    }
   }
 
   // Aggregate data across all selected locations
@@ -350,6 +379,32 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
             </Tooltip>
             
             <Chip size="small" label={timeRange === '24h' ? 'Last 24h' : 'Last 7d'} variant="outlined" onClick={() => setTimeRange(timeRange === '24h' ? '7d' : '24h')} />
+            
+            {/* AI Insights Button */}
+            <Tooltip title="Get AI-powered insights and recommendations" arrow>
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<AutoAwesomeRoundedIcon />}
+                onClick={handleAIInsights}
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  px: { xs: 1, sm: 2 },
+                  fontSize: { xs: '0.75rem', sm: '0.875rem' },
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                AI Insights
+              </Button>
+            </Tooltip>
+            
             <IconButton onClick={onClose} size="small"><CloseRoundedIcon /></IconButton>
           </Stack>
           <Divider sx={{ opacity: 0.2 }} />
@@ -694,6 +749,21 @@ export default function UrbanSenseControlRoom({ open, onClose }) {
           </Box>
         </DialogContent>
       </Dialog>
+
+      {/* AI Insights Modal */}
+      <AIInsightsModal
+        open={aiInsightsOpen}
+        onClose={() => setAiInsightsOpen(false)}
+        insights={aiInsights}
+        loading={aiInsightsLoading}
+        context={{
+          location: selectedLocationIds.length === 1 
+            ? allLocations.find(l => l.id === selectedLocationIds[0])?.shortName 
+            : `${selectedLocationIds.length} Locations`,
+          timeRange: timeRange === '24h' ? 'Last 24 hours' : 'Last 7 days',
+          dataType: 'Multi-Location Analytics'
+        }}
+      />
     </Box>
   )
 }

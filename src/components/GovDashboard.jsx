@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Box, Paper, Stack, Typography, Chip, Grid, IconButton, Divider, Button, List, ListItem, ListItemText, Tabs, Tab, Alert, Drawer } from '@mui/material'
+import { Box, Paper, Stack, Typography, Chip, Grid, IconButton, Divider, Button, List, ListItem, ListItemText, Tabs, Tab, Alert, Drawer, Tooltip as MuiTooltip } from '@mui/material'
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded'
 import BoltRoundedIcon from '@mui/icons-material/BoltRounded'
 import ShieldRoundedIcon from '@mui/icons-material/ShieldRounded'
@@ -7,11 +7,14 @@ import ForestRoundedIcon from '@mui/icons-material/ForestRounded'
 import ArchitectureRoundedIcon from '@mui/icons-material/ArchitectureRounded'
 import ReportRoundedIcon from '@mui/icons-material/ReportRounded'
 import BuildRoundedIcon from '@mui/icons-material/BuildRounded'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
 import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip, LineChart, Line, Legend, CartesianGrid } from 'recharts'
 import { generateGovernmentSnapshot } from '../utils/govSimulator'
 import { generateAdvancedData } from '../utils/advancedSimulator'
 import { globeColors, statusColors } from '../config/globeColors'
 import CanopyStatusMap from './CanopyStatusMap'
+import AIInsightsModal from './advanced/AIInsightsModal'
+import { generateAIInsights } from '../utils/aiInsightsGenerator'
 
 export default function GovDashboard({ open, onClose }) {
   // System-wide KPIs
@@ -22,12 +25,39 @@ export default function GovDashboard({ open, onClose }) {
   const [tab, setTab] = useState(0)
   // Selected canopy/asset for drill-down
   const [selected, setSelected] = useState(null)
+  // AI Insights state
+  const [aiInsightsOpen, setAiInsightsOpen] = useState(false)
+  const [aiInsights, setAiInsights] = useState([])
+  const [aiInsightsLoading, setAiInsightsLoading] = useState(false)
 
   useEffect(() => {
     const id1 = setInterval(() => setSnap(generateGovernmentSnapshot()), 6000)
     const id2 = setInterval(() => setAdv(generateAdvancedData({ hours: 24 })), 6000)
     return () => { clearInterval(id1); clearInterval(id2) }
   }, [])
+
+  // Handle AI Insights generation
+  const handleAIInsights = async () => {
+    setAiInsightsOpen(true)
+    setAiInsightsLoading(true)
+    
+    try {
+      const context = {
+        locationIds: ['luneta'],
+        timeRange: '24h',
+        data: { advData: adv, govSnap: snap },
+        dashboardType: 'gov'
+      }
+      
+      const result = await generateAIInsights(context)
+      setAiInsights(result.insights)
+    } catch (error) {
+      console.error('Error generating AI insights:', error)
+      setAiInsights([])
+    } finally {
+      setAiInsightsLoading(false)
+    }
+  }
 
   const canopies = useMemo(() => mapAdvancedCanopiesToAssets(adv?.canopies || [], snap?.maintenanceDue), [adv, snap])
 
@@ -46,6 +76,31 @@ export default function GovDashboard({ open, onClose }) {
             <Typography variant="h6" fontWeight={800}>Government Dashboard</Typography>
             <Chip size="small" label="Smart Heritage Canopies" icon={<ArchitectureRoundedIcon />} sx={{ ml: 1 }} />
             <Box sx={{ flexGrow: 1 }} />
+            
+            {/* AI Insights Button */}
+            <MuiTooltip title="Get AI-powered insights and recommendations" arrow>
+              <Button
+                variant="contained"
+                size="small"
+                startIcon={<AutoAwesomeRoundedIcon />}
+                onClick={handleAIInsights}
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  fontWeight: 700,
+                  textTransform: 'none',
+                  px: 2,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                    transform: 'translateY(-1px)',
+                    boxShadow: '0 4px 12px rgba(102, 126, 234, 0.4)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                AI Insights
+              </Button>
+            </MuiTooltip>
+            
             <IconButton onClick={onClose}><CloseRoundedIcon /></IconButton>
           </Stack>
           <Divider sx={{ opacity: 0.2 }} />
@@ -198,6 +253,19 @@ export default function GovDashboard({ open, onClose }) {
               </Stack>
             )}
           </Drawer>
+
+          {/* AI Insights Modal */}
+          <AIInsightsModal
+            open={aiInsightsOpen}
+            onClose={() => setAiInsightsOpen(false)}
+            insights={aiInsights}
+            loading={aiInsightsLoading}
+            context={{
+              location: 'Luneta Park',
+              timeRange: 'Last 24 hours',
+              dataType: 'Government Operations'
+            }}
+          />
         </Stack>
       </Paper>
     </Box>

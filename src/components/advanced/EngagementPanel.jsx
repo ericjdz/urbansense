@@ -1,16 +1,67 @@
-import { Box, Paper, Typography, Grid, Stack, LinearProgress, List, ListItem, ListItemText } from '@mui/material'
+import { Box, Paper, Typography, Grid, Stack, LinearProgress, List, ListItem, ListItemText, IconButton, Tooltip as MuiTooltip } from '@mui/material'
 import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
 import { dataVizColors } from '../../config/globeColors'
+import { useState } from 'react'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
+import AIInsightsModal from './AIInsightsModal'
+import { generateAIInsights } from '../../utils/aiInsightsGenerator'
 
 export default function EngagementPanel({ data }) {
   const sites = data.engagementSites || []
   const totals = buildTotals(sites)
+  const [aiInsightsOpen, setAiInsightsOpen] = useState(false)
+  const [aiInsights, setAiInsights] = useState([])
+  const [aiInsightsLoading, setAiInsightsLoading] = useState(false)
+
+  // Handle AI Insights generation
+  const handleAIInsights = async () => {
+    setAiInsightsOpen(true)
+    setAiInsightsLoading(true)
+    
+    try {
+      const context = {
+        locationIds: ['luneta'],
+        timeRange: '24h',
+        data: { advData: data },
+        dashboardType: 'engagement'
+      }
+      
+      const result = await generateAIInsights(context)
+      setAiInsights(result.insights)
+    } catch (error) {
+      console.error('Error generating AI insights:', error)
+      setAiInsights([])
+    } finally {
+      setAiInsightsLoading(false)
+    }
+  }
 
   return (
     <Grid container spacing={{ xs: 1, sm: 1.25, md: 1.5 }} sx={{ height: '100%' }}>
       <Grid item xs={12} md={6} sx={{ height: { xs: 'auto', md: '100%' }, minHeight: { xs: 280, md: 0 } }}>
         <Paper variant="outlined" sx={{ p: { xs: 1.5, sm: 2 }, height: '100%', minHeight: { xs: 280, md: 0 }, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)', display: 'flex', flexDirection: 'column' }}>
-          <Typography variant="subtitle2" gutterBottom sx={{ fontSize: { xs: '0.875rem', sm: '0.875rem' } }}>GlobeOne Engagement by Heritage Site</Typography>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 0.5 }}>
+            <Typography variant="subtitle2" sx={{ fontSize: { xs: '0.875rem', sm: '0.875rem' } }}>GlobeOne Engagement by Heritage Site</Typography>
+            <MuiTooltip title="Get AI insights on conversion optimization" arrow>
+              <IconButton
+                size="small"
+                onClick={handleAIInsights}
+                sx={{
+                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  color: 'white',
+                  width: 28,
+                  height: 28,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                    transform: 'scale(1.05)',
+                  },
+                  transition: 'all 0.2s ease',
+                }}
+              >
+                <AutoAwesomeRoundedIcon sx={{ fontSize: 16 }} />
+              </IconButton>
+            </MuiTooltip>
+          </Stack>
           <Stack spacing={1.25} sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
             {sites.map(site => {
               // Calculate conversion at key funnel stages for actionable insights
@@ -73,6 +124,19 @@ export default function EngagementPanel({ data }) {
           </List>
         </Paper>
       </Grid>
+
+      {/* AI Insights Modal */}
+      <AIInsightsModal
+        open={aiInsightsOpen}
+        onClose={() => setAiInsightsOpen(false)}
+        insights={aiInsights}
+        loading={aiInsightsLoading}
+        context={{
+          location: 'All Heritage Sites',
+          timeRange: 'Last 24 hours',
+          dataType: 'Visitor Engagement & Conversion'
+        }}
+      />
     </Grid>
   )
 }

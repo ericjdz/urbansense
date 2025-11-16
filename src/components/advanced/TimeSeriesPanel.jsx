@@ -1,11 +1,17 @@
-import { Paper, Typography, Stack, Chip, ToggleButton, ToggleButtonGroup } from '@mui/material'
+import { Paper, Typography, Stack, Chip, ToggleButton, ToggleButtonGroup, IconButton, Tooltip as MuiTooltip } from '@mui/material'
 import { ResponsiveContainer, LineChart, Line, XAxis, YAxis, Tooltip, Legend, Brush, ReferenceLine, AreaChart, Area } from 'recharts'
 import { useMemo, useState } from 'react'
 import { useFilters } from '../../contexts/FilterContext'
 import { globeColors, statusColors, chartColors } from '../../config/globeColors'
+import AutoAwesomeRoundedIcon from '@mui/icons-material/AutoAwesomeRounded'
+import AIInsightsModal from './AIInsightsModal'
+import { generateAIInsights } from '../../utils/aiInsightsGenerator'
 
 export default function TimeSeriesPanel({ data }) {
   const [metric, setMetric] = useState('aqi') // 'aqi' | 'foot'
+  const [aiInsightsOpen, setAiInsightsOpen] = useState(false)
+  const [aiInsights, setAiInsights] = useState([])
+  const [aiInsightsLoading, setAiInsightsLoading] = useState(false)
   
   if (!data || !data.footSeriesToday) return null
   let selectedCellId = null
@@ -59,6 +65,29 @@ export default function TimeSeriesPanel({ data }) {
     return denominator === 0 ? 0 : numerator / denominator
   }, [filteredSeries])
 
+  // Handle AI Insights generation
+  const handleAIInsights = async () => {
+    setAiInsightsOpen(true)
+    setAiInsightsLoading(true)
+    
+    try {
+      const context = {
+        locationIds: ['luneta'],
+        timeRange: '24h',
+        data: { advData: data },
+        dashboardType: 'timeseries'
+      }
+      
+      const result = await generateAIInsights(context)
+      setAiInsights(result.insights)
+    } catch (error) {
+      console.error('Error generating AI insights:', error)
+      setAiInsights([])
+    } finally {
+      setAiInsightsLoading(false)
+    }
+  }
+
   return (
     <Paper variant="outlined" sx={{ p: 2, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.04)', flex: 1, minHeight: 300 }}>
       <Stack direction="row" spacing={1} alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
@@ -76,16 +105,37 @@ export default function TimeSeriesPanel({ data }) {
             />
           )}
         </Stack>
-        <ToggleButtonGroup
-          value={metric}
-          exclusive
-          onChange={(e, val) => val && setMetric(val)}
-          size="small"
-          sx={{ height: 28 }}
-        >
-          <ToggleButton value="aqi" sx={{ px: 1.5, py: 0.5, fontSize: 11 }}>AQI</ToggleButton>
-          <ToggleButton value="foot" sx={{ px: 1.5, py: 0.5, fontSize: 11 }}>People</ToggleButton>
-        </ToggleButtonGroup>
+        <Stack direction="row" spacing={0.5} alignItems="center">
+          <MuiTooltip title="Get AI insights on patterns and correlations" arrow>
+            <IconButton
+              size="small"
+              onClick={handleAIInsights}
+              sx={{
+                background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                color: 'white',
+                width: 28,
+                height: 28,
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #764ba2 0%, #667eea 100%)',
+                  transform: 'scale(1.05)',
+                },
+                transition: 'all 0.2s ease',
+              }}
+            >
+              <AutoAwesomeRoundedIcon sx={{ fontSize: 16 }} />
+            </IconButton>
+          </MuiTooltip>
+          <ToggleButtonGroup
+            value={metric}
+            exclusive
+            onChange={(e, val) => val && setMetric(val)}
+            size="small"
+            sx={{ height: 28 }}
+          >
+            <ToggleButton value="aqi" sx={{ px: 1.5, py: 0.5, fontSize: 11 }}>AQI</ToggleButton>
+            <ToggleButton value="foot" sx={{ px: 1.5, py: 0.5, fontSize: 11 }}>People</ToggleButton>
+          </ToggleButtonGroup>
+        </Stack>
       </Stack>
       <ResponsiveContainer width="100%" height={260}>
         {metric === 'aqi' ? (
@@ -143,6 +193,19 @@ export default function TimeSeriesPanel({ data }) {
           </AreaChart>
         )}
       </ResponsiveContainer>
+
+      {/* AI Insights Modal */}
+      <AIInsightsModal
+        open={aiInsightsOpen}
+        onClose={() => setAiInsightsOpen(false)}
+        insights={aiInsights}
+        loading={aiInsightsLoading}
+        context={{
+          location: selectedCellId ? `Cell ${selectedCellId}` : 'All Cells',
+          timeRange: 'Time Series Analysis',
+          dataType: 'AQI & Foot Traffic Correlation'
+        }}
+      />
     </Paper>
   )
 }
