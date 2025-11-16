@@ -13,9 +13,12 @@ export default function EngagementPanel({ data }) {
           <Typography variant="subtitle2" gutterBottom sx={{ fontSize: { xs: '0.875rem', sm: '0.875rem' } }}>GlobeOne Engagement by Heritage Site</Typography>
           <Stack spacing={1.25} sx={{ flex: 1, overflow: 'auto', minHeight: 0 }}>
             {sites.map(site => {
-              const completion = site.passers ? Math.round((site.deepEngaged / site.passers) * 100) : 0
+              // Calculate conversion at key funnel stages for actionable insights
+              const notificationReach = site.passers ? Math.round((site.notified / site.passers) * 100) : 0
+              const openRate = site.notified ? Math.round((site.opened / site.notified) * 100) : 0
+              const conversionRate = site.engaged ? Math.round((site.deepEngaged / site.engaged) * 100) : 0
               return (
-                <SiteRow key={site.id} site={site} completion={completion} />
+                <SiteRow key={site.id} site={site} metrics={{ notificationReach, openRate, conversionRate }} />
               )
             })}
             {sites.length === 0 && (
@@ -74,16 +77,33 @@ export default function EngagementPanel({ data }) {
   )
 }
 
-function SiteRow({ site, completion }) {
+function SiteRow({ site, metrics }) {
   return (
     <Paper variant="outlined" sx={{ p: 1.25, borderRadius: 2, bgcolor: 'rgba(255,255,255,0.03)' }}>
-      <Typography variant="subtitle2">{site.name}</Typography>
-      <Typography variant="caption" color="text.secondary">
+      <Stack direction="row" justifyContent="space-between" alignItems="flex-start" mb={0.5}>
+        <Typography variant="subtitle2">{site.name}</Typography>
+        <Typography variant="caption" sx={{ fontWeight: 600, color: metrics.conversionRate > 50 ? 'success.light' : 'text.secondary' }}>
+          {site.deepEngaged} completed
+        </Typography>
+      </Stack>
+      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 0.75 }}>
         {site.passers} detected · {site.notified} notified · {site.opened} opened · {site.engaged} engaged
       </Typography>
-      <Stack direction="row" alignItems="center" spacing={1} mt={0.75}>
-        <LinearProgress variant="determinate" value={completion} sx={{ flex: 1, height: 6, borderRadius: 999 }} />
-        <Typography variant="caption" sx={{ minWidth: 40, textAlign: 'right' }}>{completion}%</Typography>
+      <Stack direction="row" spacing={0.5} alignItems="center">
+        <Stack direction="row" spacing={0.5} sx={{ flex: 1 }}>
+          <Box sx={{ flex: 1, position: 'relative', height: 6, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
+            <Box sx={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${metrics.notificationReach}%`, bgcolor: dataVizColors.series[1], transition: 'width 0.3s' }} />
+          </Box>
+          <Box sx={{ flex: 1, position: 'relative', height: 6, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
+            <Box sx={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${metrics.openRate}%`, bgcolor: dataVizColors.series[2], transition: 'width 0.3s' }} />
+          </Box>
+          <Box sx={{ flex: 1, position: 'relative', height: 6, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 999, overflow: 'hidden' }}>
+            <Box sx={{ position: 'absolute', left: 0, top: 0, bottom: 0, width: `${metrics.conversionRate}%`, bgcolor: dataVizColors.series[4], transition: 'width 0.3s' }} />
+          </Box>
+        </Stack>
+        <Typography variant="caption" color="text.secondary" sx={{ minWidth: 80, textAlign: 'right', fontSize: '0.7rem' }}>
+          {metrics.notificationReach}% · {metrics.openRate}% · {metrics.conversionRate}%
+        </Typography>
       </Stack>
     </Paper>
   )
